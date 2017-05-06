@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 #default values
 remote_br=`git rev-parse --abbrev-ref --symbolic-full-name @{u}`
