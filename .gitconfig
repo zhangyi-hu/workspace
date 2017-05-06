@@ -1,0 +1,27 @@
+[user]
+  name = Zane Hu
+  email = hu.zhangyi@gmail.com
+[diff]
+  tool = default-difftool
+[difftool "default-difftool"]
+  cmd = code --wait --diff $LOCAL $REMOTE
+[alias]
+  br = branch
+  rb = branch -r
+  ft = fetch -a
+  st = status
+  cm = commit
+  mg = merge
+  co = checkout
+  pg = push github
+  pb = push bitbucket
+  pug = push -u github
+  ls = log --oneline
+  rh = reset --hard
+  chp = cherry-pick
+[credential]
+  helper = cache --timeout=3600
+[push]
+  default = simple
+[core]
+  excludesfile = ~/.gitignore
