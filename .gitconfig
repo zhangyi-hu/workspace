@@ -16,7 +16,7 @@
   pg = push github
   pb = push bitbucket
   pug = push -u github
-  ls = log --oneline
+  ls = log --pretty=format:"%h%x09%an%x09%ai%x09%s"
   rh = reset --hard
   chp = cherry-pick
 [credential]
