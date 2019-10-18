@@ -7,9 +7,22 @@
   cmd = code --wait --diff $LOCAL $REMOTE
 [alias]
   br = branch
+  bs = for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
+  obs = for-each-ref --sort=committerdate refs/remotes/origin --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
   rb = branch -r
   ft = fetch -a
   st = status
+  sh = stash
+  shl = stash list
+  shs = stash save
+  sha = stash apply
+  shp = stash pop
+  shd = stash drop
+  tc = diff origin/master --name-only
+  mam = diff --diff-filter=AM --name-only origin/master
+  ma = diff --diff-filter=AM --name-only
+  cma = commit --amend
+  cs = diff origin/master --stat
   cm = commit
   mg = merge
   co = checkout
