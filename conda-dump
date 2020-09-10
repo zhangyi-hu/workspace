@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 
+conda env export -n $1 --no-build > /var/tmp/temp1
+
 # grep the part before 'dependencies:'
-conda env export -n $1 --no-build | sed '/dependencies/q' > /var/tmp/temp
+sed '/dependencies/q' /var/tmp/temp1  > /var/tmp/temp2
 
 # prepare the pattern for packages installed explicitly ('conda=|python=|pytest=|scipy=|pandas=', for instance)
 pattern=`conda env export -n $1 --from-history | sed -n '/dependencies/,/prefix/p' | sed '1d; $d' | cut -d' ' -f 4- | cut -d'=' -f 1 | sed 's/$/=/' | paste -sd '|'`
 #echo $pattern
 
 # filter the output with --no-build using the pattern prepared
-conda env export -n $1 --no-build | grep -E $pattern >> /var/tmp/temp
+grep -E $pattern /var/tmp/temp1 >> /var/tmp/temp2
 
 # grep the part after 'prefix:'
-conda env export -n $1 --from-history | sed -ne '/prefix/,$p' >> /var/tmp/temp
+sed -ne '/prefix/,$p' /var/tmp/temp1 >> /var/tmp/temp2
 
 # show the result
-cat /var/tmp/temp 
+cat /var/tmp/temp2 
 
 # remove the temp file
-rm /var/tmp/temp
+rm /var/tmp/temp1
+rm /var/tmp/temp2
