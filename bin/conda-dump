@@ -25,7 +25,7 @@ fi
 sed '/dependencies/q' /var/tmp/temp1  > /var/tmp/temp2
 
 # prepare the pattern for packages installed explicitly ('conda=|python=|pytest=|scipy=|pandas=', for instance)
-pattern=`conda env export -n $name --from-history | sed -n '/dependencies/,/prefix/p' | sed '1d; $d' | cut -d' ' -f 4- | cut -d'=' -f 1 | sed 's/$/=/' | paste -sd '|'`
+pattern=`conda env export -n $name --from-history | sed -n '/dependencies/,/prefix/p' | sed '1d; $d' | cut -d' ' -f 4- | cut -d'=' -f 1 | sed 's/$/=/' | paste -sd '|' -`
 #echo $pattern
 
 # filter the output with --no-build using the pattern prepared
