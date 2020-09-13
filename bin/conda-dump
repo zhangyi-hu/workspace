@@ -1,12 +1,31 @@
 #!/usr/bin/env bash
 
-conda env export -n $1 --no-build > /var/tmp/temp1
+
+if [[ $# -eq 0 ]]; then
+  name=base
+elif [[ $# -eq 1 ]]; then
+  name=$1
+else
+  echo "Usage: conda-dump env-name"
+  exit 1
+fi
+
+conda env export -n $name --no-build > /var/tmp/temp1
+
+# Check if the output file has a dependency section, any existing environment should have at least python and conda as dependency
+# If not, the environment name specified by the user doesn't exist
+grep -q 'dependencies' /var/tmp/temp1
+if [[ $? -ne 0 ]]; then
+  echo "Environment $1 doesn't exist"
+  rm /var/tmp/temp1
+  exit 1
+fi
 
 # grep the part before 'dependencies:'
 sed '/dependencies/q' /var/tmp/temp1  > /var/tmp/temp2
 
 # prepare the pattern for packages installed explicitly ('conda=|python=|pytest=|scipy=|pandas=', for instance)
-pattern=`conda env export -n $1 --from-history | sed -n '/dependencies/,/prefix/p' | sed '1d; $d' | cut -d' ' -f 4- | cut -d'=' -f 1 | sed 's/$/=/' | paste -sd '|'`
+pattern=`conda env export -n $name --from-history | sed -n '/dependencies/,/prefix/p' | sed '1d; $d' | cut -d' ' -f 4- | cut -d'=' -f 1 | sed 's/$/=/' | paste -sd '|'`
 #echo $pattern
 
 # filter the output with --no-build using the pattern prepared
