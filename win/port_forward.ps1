@@ -25,7 +25,7 @@ iex "Remove-NetFireWallRule -DisplayName 'WSL 2 Firewall Unlock' ";
 
 # add rules for inbound traffic
 $ports_a = $ports -join ",";
-iex "New-NetFireWallRule -DisplayName 'WSL 2 Firewall Unlock' -Direction Inbound -RemoteAddress $remoteAddr  -LocalPort $ports_a -Action Allow -Protocol TCP";
+iex "New-NetFireWallRule -DisplayName 'WSL 2 Firewall Unlock' -Direction Inbound -RemoteAddress $remoteAddr -LocalPort $ports_a -Action Allow -Protocol TCP";
 
 
 # add forward rules
