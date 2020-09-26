@@ -1,5 +1,0 @@
-# forward all the traffic on port 2222 to address 192.168.223.206 on port 2222
-netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=2222 connectaddress=192.168.223.206 connectport=2222
-
-# delete port forwarding of adress 0.0.0.0 on port 2222
-netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=2222
