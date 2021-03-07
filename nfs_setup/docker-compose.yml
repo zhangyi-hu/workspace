@@ -6,7 +6,7 @@ services:
     container_name: docker-nfs-server
     hostname: docker-nfs
     volumes: 
-      - /data/nfs:/nfs:rw
+      - /data/nfs:/nfs:rw  # source dir /data/nfs nobody:nogroup recommended
       - /lib/modules:/lib/modules:ro
     environment:
       - NFS_EXPORT_0=/nfs *(rw,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash)
@@ -22,7 +22,7 @@ services:
       - "32767:32767"
       - "32767:32767/udp"
     security_opt:
-      - apparmor=erichough-nfs # erichough-nfs profile need to be loaded by apparmor first
+      - apparmor=erichough-nfs # erichough-nfs profile need to be loaded by apparmor first by sudo apparmor_parser -r -W nfs-apparmor
     cap_add:
       - SYS_ADMIN
       - SYS_MODULE
