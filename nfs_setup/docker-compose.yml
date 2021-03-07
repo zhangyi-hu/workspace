@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  nfs:
+    image: erichough/nfs-server:latest
+    restart: unless-stopped
+    container_name: docker-nfs-server
+    hostname: docker-nfs
+    volumes: 
+      - /data/nfs:/nfs:rw
+      - /lib/modules:/lib/modules:ro
+    environment:
+      - NFS_EXPORT_0=/nfs *(rw,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash)
+      - NFS_LOG_LEVEL=DEBUG
+      - NFS_VERSION=3
+    ports: 
+      - "111:111"
+      - "111:111/udp"
+      - "2049:2049"
+      - "2049:2049/udp"
+      - "32765:32765"
+      - "32765:32765/udp"
+      - "32767:32767"
+      - "32767:32767/udp"
+    security_opt:
+      - apparmor=erichough-nfs # erichough-nfs profile need to be loaded by apparmor first
+    cap_add:
+      - SYS_ADMIN
+      - SYS_MODULE
