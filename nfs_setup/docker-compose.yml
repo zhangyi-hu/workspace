@@ -1,5 +1,5 @@
 version: "3.8"
-services:
+services: # verified to work on ubuntu20.04
   nfs:
     image: erichough/nfs-server:latest
     restart: unless-stopped
