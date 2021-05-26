@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.8"  # sudo mount -v  -t nfs -o nfsvers=3,nolock,proto=tcp,port=2049 host:/dir local_dir
 services: # verified to work on ubuntu20.04
   nfs:
     image: erichough/nfs-server:latest
