@@ -1,11 +1,42 @@
 version: "3.8"
 
 services:
+  conda_index:
+    restart: unless-stopped
+    image: <image name>:latest
+    container_name: conda_index
+    build:
+      context: .
+      dockerfile: conda-index.df
+    environment:
+      - conda_dir=<image package directory>/<channel>
+    networks:
+      - conda_repo
+    ports:
+      - "2222:22"
+    volumes:
+      - <host package directory>/<channel>:<image package directory>/<channel>:rw
   nginx:
     restart: unless-stopped
     image: nginx
+    container_name: nginx
+    networks:
+      - conda_repo
     ports:
       - "80:80"
     volumes:
-      - <web_root_dir>:/usr/share/nginx/html:ro
-      - <this_dir>/nginx.conf:/etc/nginx/nginx.conf:ro
+      - <host package directory>:/usr/share/nginx/html:ro
+      - <this directory>/nginx.conf:/etc/nginx/nginx.conf:ro
+
+
+
+
+networks:
+  conda_repo:
+    name: conda_repo
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.1.0/24
+          gateway: 10.10.1.1
