@@ -1,5 +1,6 @@
 version: "3.8"
-
+# use scp to upload conda packages to repo host:
+# sshpass -p "develop" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q  -P 2222 <package dir>/*.tar.bz2 develop@<repo hostname>:~/<channel>/linux-64/
 services:
   conda_index:
     restart: unless-stopped
