@@ -1,0 +1,31 @@
+FROM continuumio/miniconda3
+
+# install ssh server
+RUN apt-get -qq update \
+        && apt-get -qq install openssh-server \
+        && rm -rf /var/lib/apt/lists/* \
+        && apt-get clean
+
+
+# config ssh service
+RUN sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+RUN sed -i 's/#PubkeyAuthentication.*/PubkeyAuthentication no/' /etc/ssh/sshd_config
+
+# add user develop to upload conda packages
+RUN useradd develop \
+    # remove password
+                && echo develop:develop | chpasswd \
+    && mkdir /home/develop \
+    && chown -R develop:develop /home/develop
+
+# add script to automaticaly index conda repo when new package is uploaded
+RUN apt-get -qq update && apt-get -qq upgrade
+RUN apt-get install -q -y inotify-tools
+RUN conda install conda-build
+COPY conda_auto_index.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/conda_auto_index.sh
+
+
+# command to run when up
+CMD service ssh start && /usr/local/bin/conda_auto_index.sh
+
