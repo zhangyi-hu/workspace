@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+if [[ $# -ne 2 ]]; then
+  echo "usage: wait_for_server host port"
+  echo "args received: $@"
+  exit 1
+else
+  host=$1
+  port=$2
+fi
+
+while ! nc -z $host $port; do
+  echo "$(date) - waiting for $host:$port to come up..."
+  sleep 1
+done
