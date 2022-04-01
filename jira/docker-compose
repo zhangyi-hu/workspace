@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  jira:
+    image: atlassian/jira-software:latest
+    restart: unless-stopped
+    container_name: jira
+    hostname: jira
+    volumes:
+      - jiraVolume:/var/atlassian/application-data/jira
+    environment:
+      - ATL_JDBC_URL=
+      - ATL_JDBC_USER=
+      - ATL_JDBC_PASSWORD=
+      - ATL_DB_DRIVER=org.postgresql.Driver
+      - ATL_DB_TYPE=postgres72
+      - 
+    ports:
+      - "80:8080"
