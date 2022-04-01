@@ -9,7 +9,7 @@ services:
     volumes:
       - jiraVolume:/var/atlassian/application-data/jira
     environment:
-      - ATL_JDBC_URL=
+      - ATL_JDBC_URL=jdbc:postgresql://<host>/jira # need to create a database call jira
       - ATL_JDBC_USER=
       - ATL_JDBC_PASSWORD=
       - ATL_DB_DRIVER=org.postgresql.Driver
