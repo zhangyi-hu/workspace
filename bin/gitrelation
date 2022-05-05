@@ -15,7 +15,8 @@ common_root=`git merge-base $current_br $remote_br | cut -c-7`
 echo
 echo "------------------- "$current_br
 git ls $current_br -$num |  sed ''/$common_root/s//`printf "\033[32m$common_root\033[0m"`/''
-
+echo ""
 echo "------------------- "$remote_br
 #git ls $remote_br -$num  |  sed ''/$common_root/s//`printf "\033[32m$common_root\033[0m"`/''
 git ls $remote_br -5  |  sed ''/$common_root/s//`printf "\033[32m$common_root\033[0m"`/''
+echo ""
