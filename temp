@@ -10,31 +10,43 @@ def active_set():
         grad = Omega @ x
         active = (np.abs(x - b) < tol)[:, 0]
         feasible = (x - b > -tol)[:, 0]
-        critical = (np.abs(grad) < tol)[:, 0]
-        # can_decrease = ((grad >= tol) & (x - b > tol))[:, 1]
+        critical = (np.abs(grad) < tol)[:, 1]
+        can_decrease = ((grad >= tol) & (x - b > tol))[:, 0]
         active_optimal = (grad > -tol)[:, 0] & active
         feasible_optimal = critical & feasible
 
         # print(f'{i}th iter, obj: {(x.T @ Omega @ x)[0, 0]:.6g}, '
         #       f'active: {active}, feasible: {feasible}, grad: {grad[:, 0]}')
-        # print(f'{i}th iter, obj: {(x.T @ Omega @ x)[0, 0]:.6g}')
+        # print(f'{i}th iter, obj: {(x.T @ Omega @ x)[0, 0]}')
         if np.all(active_optimal | feasible_optimal):
             print(f'{i}th iter, obj: {(x.T @ Omega @ x)[0, 0]:.6g}')
             return
 
-        # move the infeasible variables to be active
+        # move the infeasible variables to boundary
         x[~feasible] = b[~feasible]
+        # move the feasible and inactive variables with positive derivatives to the boundary
+        x[can_decrease] = b[can_decrease]
 
-        fixed = active_optimal | ~feasible
+        fixed = active_optimal | ~feasible | can_decrease
         fixed = np.where(fixed)[0].tolist()
 
         if tuple(fixed) in visit_indices:
             idx = visit_indices[tuple(fixed)]
             fixed = set(fixed)
-            for j in range(idx+1, i):
+            new_active_found = False
+            for j in range(idx + 1, i):
                 fixed.update(visited[j])
                 if tuple(sorted(fixed)) not in visit_indices:
+                    new_active_found = True
                     break
+            if not new_active_found:
+                for j in reversed(range(idx)):
+                    fixed.update(visited[j])
+                    if tuple(sorted(fixed)) not in visit_indices:
+                        new_active_found = True
+                        break
+            if not new_active_found:
+                raise RuntimeError("Trapped in active set search cycle")
             fixed = sorted(fixed)
 
         visited.append(fixed)
@@ -51,14 +63,14 @@ def active_set():
         # print(np.hstack([x, b, grad]))
         Sigma[fixed] = Omega[fixed]
 
-
     # print(np.array(sorted(np.linalg.eigvals(Omega)))[[0, -1]])
     # print(sorted(b[:, 0]))
     # print()
     # print(Omega)
     # print(Omega @ b)
     # print(np.hstack([x, b, grad]))
-    raise RuntimeError("Iteration fail to converge")
+    raise RuntimeError(f"Fail to converge after {M} iteration")
+
 
 if __name__ == '__main__':
     tol = 1e-8
@@ -68,7 +80,7 @@ if __name__ == '__main__':
 
     total_time = 0.0
     for k in range(T):
-    # for k in range(6373239, 6373239 + 1): 9532679
+    # for k in range(9532679, 9532679 + 1):
         print(k)
         np.random.seed(k)
         X = np.random.normal(size=(n, n))
