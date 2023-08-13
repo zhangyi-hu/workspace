@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     total_time = 0.0
     for k in range(T):
-    # for k in range(6373239, 6373239 + 1):
+    # for k in range(6373239, 6373239 + 1): 9532679
         print(k)
         np.random.seed(k)
         X = np.random.normal(size=(n, n))
