@@ -1,0 +1,89 @@
+import numpy as np
+from time import time
+
+
+def active_set():
+    global grad, x
+    visited = []
+    visit_indices = {}
+    for i in range(M):
+        grad = Omega @ x
+        active = (np.abs(x - b) < tol)[:, 0]
+        feasible = (x - b > -tol)[:, 0]
+        critical = (np.abs(grad) < tol)[:, 0]
+        # can_decrease = ((grad >= tol) & (x - b > tol))[:, 1]
+        active_optimal = (grad > -tol)[:, 0] & active
+        feasible_optimal = critical & feasible
+
+        # print(f'{i}th iter, obj: {(x.T @ Omega @ x)[0, 0]:.6g}, '
+        #       f'active: {active}, feasible: {feasible}, grad: {grad[:, 0]}')
+        # print(f'{i}th iter, obj: {(x.T @ Omega @ x)[0, 0]:.6g}')
+        if np.all(active_optimal | feasible_optimal):
+            print(f'{i}th iter, obj: {(x.T @ Omega @ x)[0, 0]:.6g}')
+            return
+
+        # move the infeasible variables to be active
+        x[~feasible] = b[~feasible]
+
+        fixed = active_optimal | ~feasible
+        fixed = np.where(fixed)[0].tolist()
+
+        if tuple(fixed) in visit_indices:
+            idx = visit_indices[tuple(fixed)]
+            fixed = set(fixed)
+            for j in range(idx+1, i):
+                fixed.update(visited[j])
+                if tuple(sorted(fixed)) not in visit_indices:
+                    break
+            fixed = sorted(fixed)
+
+        visited.append(fixed)
+        visit_indices[tuple(fixed)] = i
+
+        Sigma[fixed] = 0.0
+        Sigma[fixed, fixed] = 1.0
+        rhs = np.zeros_like(grad)
+        rhs[fixed] = x[fixed]
+        # active optimal variables stay unchanged, other variables solved to make its gradients zero
+        x = np.linalg.solve(Sigma, rhs)
+        # print()
+        # print(Sigma)
+        # print(np.hstack([x, b, grad]))
+        Sigma[fixed] = Omega[fixed]
+
+
+    # print(np.array(sorted(np.linalg.eigvals(Omega)))[[0, -1]])
+    # print(sorted(b[:, 0]))
+    # print()
+    # print(Omega)
+    # print(Omega @ b)
+    # print(np.hstack([x, b, grad]))
+    raise RuntimeError("Iteration fail to converge")
+
+if __name__ == '__main__':
+    tol = 1e-8
+    M = 100
+    n = 34
+    T = 100000000
+
+    total_time = 0.0
+    for k in range(T):
+    # for k in range(6373239, 6373239 + 1):
+        print(k)
+        np.random.seed(k)
+        X = np.random.normal(size=(n, n))
+        Omega = X.T @ X
+        b = np.random.normal(size=(n, 1))
+        Sigma = Omega.copy()
+        x = np.zeros_like(b)
+        grad = np.empty_like(x)
+
+        tic = time()
+        active_set()
+        toc = time()
+        total_time += toc - tic
+
+        # print(toc - tic)
+        # print(np.hstack([x, b, grad]))
+
+    print(total_time / T)
